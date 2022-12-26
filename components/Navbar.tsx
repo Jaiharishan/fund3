@@ -20,6 +20,7 @@ import { Image } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useRouter } from "next/router";
 
 const NavLink = ({ children }: { children: ReactNode }) => (
   <Link
@@ -36,10 +37,14 @@ const NavLink = ({ children }: { children: ReactNode }) => (
   </Link>
 );
 
+// need to create a global user context and see if the user is connected
+// only if the user is not connect the button should show connect
+
 export default function Navbar() {
   const [isMount, setIsMount] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
 
   const {
     autoConnect,
@@ -55,8 +60,10 @@ export default function Navbar() {
     setIsMount(true);
     if (connected) {
       console.log({ wallets, wallet, publicKey });
+      // user con
+      // router.push("/explore");
     }
-  }, [connected, wallets, wallet, publicKey]);
+  }, [connected, wallets, wallet, publicKey, router]);
 
   return (
     <>
@@ -86,42 +93,6 @@ export default function Navbar() {
                 {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
               </Button>
               {isMount && <WalletMultiButton />}
-
-              {/* <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={"full"}
-                  variant={"link"}
-                  cursor={"pointer"}
-                  minW={0}
-                >
-                  <Avatar
-                    size={"sm"}
-                    src={
-                      "https://avatars.dicebear.com/api/micah/your-custom-seed.svg"
-                    }
-                  />
-                </MenuButton>
-                <MenuList alignItems={"center"}>
-                  <br />
-                  <Center>
-                    <Avatar
-                      size={"2xl"}
-                      src={
-                        "https://avatars.dicebear.com/api/micah/your-custom-seed.svg"
-                      }
-                    />
-                  </Center>
-                  <br />
-                  <Center>
-                    <p>Username</p>
-                  </Center>
-                  <br />
-                  <MenuDivider />
-                  <MenuItem>Dashboard</MenuItem>
-                  <MenuItem>Logout</MenuItem>
-                </MenuList>
-              </Menu> */}
             </Stack>
           </Flex>
         </Flex>

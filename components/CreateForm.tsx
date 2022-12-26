@@ -3,7 +3,9 @@ import React, {
   useCallback,
   useRef,
   SyntheticEvent,
+  ChangeEvent,
   FC,
+  MutableRefObject,
 } from "react";
 import {
   FormControl,
@@ -27,16 +29,19 @@ import {
 } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import ChakraTagInput from "./ChakraTagInput";
+import { ForwardRefComponent } from "framer-motion";
+import { setSyntheticLeadingComments } from "typescript";
 
 // name, description, goal amount, tags, duration, links
 const CreateForm: FC = () => {
-  const [title, useTitle] = useState<string | null>("");
-  const [targetAmount, setTargetAmount] = useState<number | null>(0);
+  const [title, setTitle] = useState<string>("");
+  const [targetAmount, setTargetAmount] = useState<string>("0");
   const [tags, setTags] = useState<string[]>([]);
-  const [description, setDescription] = useState<string | null>("");
+  const [description, setDescription] = useState<string>("");
   const [links, setLinks] = useState<string[]>([]);
+  const [file, setFile] = useState<File>();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef();
+  const cancelRef = useRef<any>();
 
   const handleTagsChange = useCallback(
     (event: SyntheticEvent, tags: string[]) => {
@@ -51,6 +56,12 @@ const CreateForm: FC = () => {
     },
     []
   );
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
+  };
 
   //   form submission logic goes here
   const handleSubmit = () => {
@@ -68,23 +79,43 @@ const CreateForm: FC = () => {
             appropriate details!
           </div>
         </div>
-        <FormControl isRequired>
+        <FormControl>
           <FormLabel>Title</FormLabel>
           <Input
             type={"text"}
             placeholder={"Enter the title for your funding"}
             className={"mb-3"}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
           <FormLabel>Target Amount</FormLabel>
           <InputGroup className="mb-3">
-            <Input type={"number"} placeholder="Enter the target amount" />
-            <InputRightAddon>SOL</InputRightAddon>
+            <Input
+              type={"number"}
+              placeholder="Enter the target amount"
+              isRequired
+              value={targetAmount}
+              onChange={(e) => setTargetAmount(e.target.value)}
+            />
+            <InputRightAddon>
+              <Image src={"./solana-sol-icon.png"} alt={"sol"} w={"5"} />
+            </InputRightAddon>
           </InputGroup>
+
+          <FormLabel>Image</FormLabel>
+          <Input
+            type={"file"}
+            placeholder={"Upload relevent images here!"}
+            onClick={(e) => handleFileChange}
+          />
 
           <FormLabel>Description</FormLabel>
           <Textarea
             placeholder="Describe why you are raising this fund. Add some details about it!"
             className="mb-3"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            isRequired
           />
 
           <FormLabel>Tags</FormLabel>
